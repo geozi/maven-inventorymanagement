@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"applauncher"},{"l":"dao"},{"l":"dao.exceptions"},{"l":"dao.util"},{"l":"model"},{"l":"service"},{"l":"service.dto"},{"l":"service.exceptions"},{"l":"viewcontroller"},{"l":"viewcontroller.validation"}];updateSearchResults();

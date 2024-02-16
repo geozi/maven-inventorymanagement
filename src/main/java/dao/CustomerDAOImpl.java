@@ -1,0 +1,280 @@
+package dao;
+
+import model.Customer;
+import model.KeywordType;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import dao.exceptions.CustomerDAOException;
+import dao.util.DBUtil;
+
+import java.sql.ResultSet;
+
+/**
+ * The {@link CustomerDAOImpl} class implements the CRUD methods
+ * defined in the {@link IPrimaryEntityDAO} interface for
+ * the Customer primary table.
+ */
+public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
+	
+	private int id;
+	private String firstname;
+	private String lastname;
+	private String mobilePhone;
+	private String email;
+	private String billingAddress;
+	private String city;
+	private String sql;
+	private StringBuilder sqlBuilder;
+	private ResultSet rs;
+	private Customer customer;
+	private ArrayList<Customer> customers;
+	private int lastInsertId;
+
+	@Override
+	public void insert(Customer customer) throws CustomerDAOException {
+		
+		firstname = customer.getFirstname();
+		lastname = customer.getLastname();
+		mobilePhone = customer.getMobilePhone();
+		email = customer.getEmail();
+		billingAddress= customer.getBillingAddress();
+		city = customer.getCity();
+		
+		sqlBuilder = new StringBuilder();
+		sqlBuilder.append("INSERT INTO Customer (Firstname, Lastname, Mobile_Phone, Email, Billing_Address, City)");
+		sqlBuilder.append(" VALUES (?, ?, ?, ?, ?, ?)");
+		sql = sqlBuilder.toString();
+		
+		
+		try (Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql)) {
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				ps.setString(1, firstname);
+				ps.setString(2, lastname);
+				ps.setString(3, mobilePhone);
+				ps.setString(4, email);
+				ps.setString(5, billingAddress);
+				ps.setString(6, city);
+				ps.executeUpdate();
+			}
+			
+		} catch (SQLException e1) {
+			throw new CustomerDAOException("SQL Error in Customer record addition");
+		}
+	}
+
+	@Override
+	public Customer get(int id) throws CustomerDAOException {
+		
+		sql = "SELECT * FROM Customer WHERE ID=?";
+		
+		try(Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				ps.setString(1, Integer.toString(id));
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					firstname = rs.getString("Firstname");
+					lastname = rs.getString("Lastname");
+					mobilePhone = rs.getString("Mobile_Phone");
+					email = rs.getString("Email");
+					billingAddress = rs.getString("Billing_Address");
+					city = rs.getString("City");
+				}
+				
+				customer = new Customer(id, firstname, lastname, mobilePhone, email, billingAddress, city);
+			}
+			
+		} catch (SQLException e2) {
+			throw new CustomerDAOException("SQL Error in retrieving a specified Customer record");
+		}
+		return customer;
+	}
+
+	@Override
+	public void update(Customer customer) throws CustomerDAOException {
+		
+		id = customer.getId();
+		firstname = customer.getFirstname();
+		lastname = customer.getLastname();
+		mobilePhone = customer.getMobilePhone();
+		email = customer.getEmail();
+		billingAddress= customer.getBillingAddress();
+		city = customer.getCity();
+		
+		sqlBuilder = new StringBuilder();
+		sqlBuilder.append("UPDATE Customer SET Firstname=?, Lastname=?, Mobile_Phone=?, ");
+		sqlBuilder.append(" Email=?, Billing_Address=?, City=? WHERE ID=?");
+		sql = sqlBuilder.toString();
+		
+		try(Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql)){
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				ps.setString(1, firstname);
+				ps.setString(2, lastname);
+				ps.setString(3, mobilePhone);
+				ps.setString(4, email);
+				ps.setString(5, billingAddress);
+				ps.setString(6, city);
+				ps.setString(7, Integer.toString(id));
+				ps.executeUpdate();
+			}
+
+			
+		} catch(SQLException e3) {
+			throw new CustomerDAOException("SQL Error in Customer record update");
+		}
+	}
+
+	@Override
+	public void delete(int id) throws CustomerDAOException {
+		
+		sql = "DELETE FROM Customer WHERE ID=?";
+		
+		try (Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql)) {
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				ps.setString(1, Integer.toString(id));
+				ps.executeUpdate();
+			}
+			
+		} catch(SQLException e4) {
+			throw new CustomerDAOException("SQL Error in Customer record deletion");
+		}
+		
+	}
+
+	@Override
+	public List<Customer> getAllByKeyword(KeywordType t, String kw) throws CustomerDAOException {
+		
+		try {
+			if(t.equals(KeywordType.LASTNAME)) {
+				sql = "SELECT * FROM Customer WHERE Lastname LIKE ?";
+			} else if (t.equals(KeywordType.CITY)) {
+				sql = "SELECT * FROM Customer WHERE City LIKE ?";
+			} else {
+				throw new SQLException();
+			}
+		} catch (SQLException e5) {
+			throw new CustomerDAOException("SQL Error in forming query statement");
+		}
+		
+		
+		try(Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)){
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				customers = new ArrayList<>(100);
+				
+				ps.setString(1, kw+"%");
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					id = rs.getInt("ID");
+					firstname = rs.getString("Firstname");
+					lastname = rs.getString("Lastneme");
+					mobilePhone = rs.getString("Mobile_Phone");
+					email = rs.getString("Email");
+					billingAddress = rs.getString("Billing_Address");
+					city = rs.getString("City");
+					
+					customers.add(new Customer(id, firstname, lastname, mobilePhone, email, billingAddress, city));
+				}
+				
+			}
+			
+		} catch(SQLException e6) {
+			throw new CustomerDAOException("SQL Error in retrieving Customer records");
+		}
+			
+		return  customers;
+	}
+
+	@Override
+	public int getLastInsertID() throws CustomerDAOException {
+		
+		sql = "SELECT LAST_INSERT_ID() as ID";
+		
+		try(Connection connection = DBUtil.getConnection();
+				Statement smt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				rs = smt.executeQuery(sql);
+				lastInsertId = rs.getInt("ID");
+			}
+			
+		} catch(SQLException e7) {
+			throw new CustomerDAOException("SQL Error in LAST_INSERT_ID() from Customer operation");
+		}
+		
+		return lastInsertId;
+	}
+
+	@Override
+	public List<Customer> getAll() throws CustomerDAOException {
+		
+		sql = "SELECT * FROM Customer";
+		
+		try(Connection connection = DBUtil.getConnection();
+				Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)){
+			
+			if(connection.isValid(TIMEOUT)) {
+				
+				System.out.println("Connection is established");
+				
+				customers = new ArrayList<>(100);
+				rs = stmt.executeQuery(sql);
+				
+				while(rs.next()) {
+					id = rs.getInt("ID");
+					firstname = rs.getString("Firstname");
+					lastname = rs.getString("Lastname");
+					mobilePhone = rs.getString("Mobile_Phone");
+					email = rs.getString("Email");
+					billingAddress = rs.getString("Billing_Address");
+					city = rs.getString("City");
+					
+					customers.add(new Customer(id, firstname, lastname, mobilePhone, email, billingAddress, city));
+				}
+				
+			}
+			
+		} catch(SQLException e8) {
+			throw new CustomerDAOException("SQL Error in retrieving Customer records");
+		}
+		
+		return customers;
+	}
+	
+	
+
+}
