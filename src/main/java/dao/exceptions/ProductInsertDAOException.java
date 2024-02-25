@@ -11,4 +11,5 @@ public class ProductInsertDAOException extends BaseDAOException{
 	public ProductInsertDAOException() {
 		super("SQL Error in Product record addition.");
 	}
+	
 }

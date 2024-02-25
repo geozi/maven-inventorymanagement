@@ -11,4 +11,5 @@ public class SupplierInsertDAOException extends BaseDAOException {
 	public SupplierInsertDAOException() {
 		super("SQL Error in Supplier record addition.");
 	}
+	
 }

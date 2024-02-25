@@ -11,5 +11,4 @@ public class SupplierDeleteDAOException extends BaseDAOException{
 	public SupplierDeleteDAOException() {
 		super("SQL Error in Supplier record deletion.");
 	}
-
 }

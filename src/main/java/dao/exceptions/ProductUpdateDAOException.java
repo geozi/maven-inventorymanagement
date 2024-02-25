@@ -11,5 +11,4 @@ public class ProductUpdateDAOException extends BaseDAOException {
 	public ProductUpdateDAOException() {
 		super("SQL Error in Product record update.");
 	}
-
 }

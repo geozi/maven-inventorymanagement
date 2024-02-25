@@ -11,5 +11,4 @@ public class SupplierGetByKeywordDAOException extends BaseDAOException {
 	public SupplierGetByKeywordDAOException() {
 		super("SQL Error in retrieving specified Supplier records.");
 	}
-
 }

@@ -11,5 +11,4 @@ public class SupplierUpdateDAOException extends BaseDAOException {
 	public SupplierUpdateDAOException() {
 		super("SQL Error in Supplier record update.");
 	}
-
 }

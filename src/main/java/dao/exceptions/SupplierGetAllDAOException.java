@@ -11,4 +11,5 @@ public class SupplierGetAllDAOException extends BaseDAOException {
 	public SupplierGetAllDAOException() {
 		super("SQL Error in retrieving Supplier records.");
 	}
+	
 }
