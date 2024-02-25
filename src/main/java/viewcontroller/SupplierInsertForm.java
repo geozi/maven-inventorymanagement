@@ -188,4 +188,5 @@ public class SupplierInsertForm extends JFrame {
 		newSupplerClearBtn.setBounds(160, 176, 117, 25);
 		panel.add(newSupplerClearBtn);
 	}
+	
 }

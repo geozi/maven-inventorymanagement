@@ -84,4 +84,5 @@ public class OrderDTO extends BaseDTO {
 	public void setCity(String city) {
 		this.city = city;
 	}
+	
 }

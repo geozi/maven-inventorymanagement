@@ -254,4 +254,5 @@ public class OrderInsertForm extends JFrame {
 		currentCustomersLbl.setBounds(622, 12, 147, 15);
 		contentPane.add(currentCustomersLbl);
 	}
+	
 }

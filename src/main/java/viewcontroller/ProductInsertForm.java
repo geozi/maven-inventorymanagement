@@ -256,4 +256,5 @@ public class ProductInsertForm extends JFrame {
 		currentSuppliersLbl.setBounds(624, 12, 134, 15);
 		contentPane.add(currentSuppliersLbl);
 	}
+	
 }

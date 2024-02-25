@@ -86,4 +86,5 @@ public class ProductDTO extends BaseDTO{
 		this.supplierID = supplierID;
 	}
 
+	
 }

@@ -87,4 +87,5 @@ public class SupplierDTO extends BaseDTO{
 		this.city = city;
 	}
 	
+	
 }

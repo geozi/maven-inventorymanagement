@@ -99,7 +99,4 @@ public class CustomerDTO extends BaseDTO {
 		this.city = city;
 	}
 	
-	
-	
-	
 }
