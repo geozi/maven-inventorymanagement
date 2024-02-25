@@ -257,5 +257,4 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 		
 		return customers;
 	}
-
 }
