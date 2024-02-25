@@ -11,4 +11,5 @@ public class ProductGetDAOException extends BaseDAOException {
 	public ProductGetDAOException() {
 		super("SQL Error in Product record retrieval.");
 	}
+	
 }

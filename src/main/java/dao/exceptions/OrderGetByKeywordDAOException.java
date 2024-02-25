@@ -11,5 +11,4 @@ public class OrderGetByKeywordDAOException extends BaseDAOException {
 	public OrderGetByKeywordDAOException() {
 		super("SQL Error in retrieving specified Order records.");
 	}
-
 }

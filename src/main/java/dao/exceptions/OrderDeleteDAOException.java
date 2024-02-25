@@ -11,4 +11,5 @@ public class OrderDeleteDAOException extends BaseDAOException {
 	public OrderDeleteDAOException() {
 		super("SQL Error in Order record deletion.");
 	}
+	
 }

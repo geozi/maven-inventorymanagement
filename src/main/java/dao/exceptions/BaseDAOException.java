@@ -11,4 +11,5 @@ public class BaseDAOException extends Exception{
 	public BaseDAOException(String message) {
 		super(message);
 	}
+	
 }

@@ -11,5 +11,4 @@ public class OrderUpdateDAOException extends BaseDAOException {
 	public OrderUpdateDAOException() {
 		super("SQL Error in Order record update.");
 	}
-
 }

@@ -11,4 +11,5 @@ public class OrderInsertDAOException extends BaseDAOException {
 	public OrderInsertDAOException() {
 		super("SQL Error in Order record addition.");
 	}
+	
 }

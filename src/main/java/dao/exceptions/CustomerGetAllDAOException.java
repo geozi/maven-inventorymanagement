@@ -11,5 +11,4 @@ public class CustomerGetAllDAOException extends BaseDAOException{
 	public CustomerGetAllDAOException() {
 		super("SQL Error in retrieving Customer records.");
 	}
-
 }

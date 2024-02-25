@@ -11,5 +11,4 @@ public class ProductDeleteDAOException extends BaseDAOException {
 	public ProductDeleteDAOException() {
 		super("SQL Error in Product record deletion.");
 	}
-
 }

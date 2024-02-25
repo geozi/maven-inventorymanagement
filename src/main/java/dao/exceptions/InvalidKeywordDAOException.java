@@ -11,5 +11,4 @@ public class InvalidKeywordDAOException extends BaseDAOException {
 	public InvalidKeywordDAOException() {
 		super("SQL Error in forming query statement");
 	}
-
 }

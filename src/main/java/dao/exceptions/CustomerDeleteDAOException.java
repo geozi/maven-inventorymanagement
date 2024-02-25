@@ -11,5 +11,4 @@ public class CustomerDeleteDAOException extends BaseDAOException {
 	public CustomerDeleteDAOException() {
 		super("SQL Error in Customer record deletion.");
 	}
-
 }

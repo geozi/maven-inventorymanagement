@@ -11,5 +11,4 @@ public class OrderGetDAOException extends BaseDAOException {
 	public OrderGetDAOException() {
 		super("SQL Error in Order record retrieval.");
 	}
-
 }

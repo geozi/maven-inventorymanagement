@@ -11,5 +11,4 @@ public class CustomerGetByKeywordDAOException extends BaseDAOException{
 	public CustomerGetByKeywordDAOException() {
 		super("SQL Error in retrieving specified Customer records.");
 	}
-
 }

@@ -11,5 +11,4 @@ public class ProductGetByKeywordDAOException extends BaseDAOException {
 	public ProductGetByKeywordDAOException() {
 		super("SQL Error in retrieving specified Product records.");
 	}
-
 }

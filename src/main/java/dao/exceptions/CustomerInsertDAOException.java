@@ -11,4 +11,5 @@ public class CustomerInsertDAOException extends BaseDAOException {
 	public CustomerInsertDAOException() {
 		super("SQL Error in Customer record addition.");
 	}
+	
 }
