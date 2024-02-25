@@ -207,5 +207,4 @@ public class CustomerInsertForm extends JFrame {
 		newCustomerClearBtn.setBounds(168, 207, 117, 25);
 		panel.add(newCustomerClearBtn);
 	}
-	
 }
