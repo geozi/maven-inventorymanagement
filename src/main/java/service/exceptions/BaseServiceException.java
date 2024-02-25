@@ -14,5 +14,4 @@ public class BaseServiceException extends Exception{
 	public BaseServiceException(String message) {
 		super(message);
 	}
-
 }

@@ -22,5 +22,4 @@ public interface IService<T, E> {
 	List<E> getAll() throws BaseDAOException;
 	List<E> getAllByKeyword(KeywordType t, String kw) throws BaseDAOException;
 	E map(T t);
-
 }

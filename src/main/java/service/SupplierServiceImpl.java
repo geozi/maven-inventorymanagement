@@ -141,5 +141,4 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 		
 		return suppliers;
 	}
-	
 }
