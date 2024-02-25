@@ -5,10 +5,11 @@ import java.util.List;
 
 import dao.IPrimaryEntityDAO;
 import dao.CustomerDAOImpl;
-import dao.exceptions.CustomerDAOException;
+import dao.exceptions.BaseDAOException;
 import model.Customer;
 import model.KeywordType;
 import service.dto.CustomerDTO;
+import service.exceptions.BaseServiceException;
 import service.exceptions.CustomerNotFoundException;
 import service.exceptions.NoDataProvidedException;
 
@@ -27,8 +28,7 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 	}
 
 	@Override
-	public void insert(CustomerDTO dto)
-			throws CustomerDAOException, NoDataProvidedException {
+	public void insert(CustomerDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -38,18 +38,15 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 			Customer customer = map(dto);
 			customerDAO.insert(customer);
 			
-		} catch(CustomerDAOException | NoDataProvidedException e1) {
-			e1.printStackTrace();
-			throw e1;
-		} catch(Exception e1) {
-			e1.printStackTrace();
-		}
-		
+			} catch(BaseDAOException e1) {
+				throw e1;
+			} catch(BaseServiceException e1) {
+				throw e1;
+			}
 	}
 
 	@Override
-	public void update(CustomerDTO dto)
-			throws CustomerDAOException, NoDataProvidedException, CustomerNotFoundException {
+	public void update(CustomerDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -62,17 +59,16 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 			}
 			customerDAO.update(customer);
 			
-		} catch(CustomerDAOException | NoDataProvidedException | CustomerNotFoundException e2) {
-			e2.printStackTrace();
+		} catch(BaseDAOException e2) {
 			throw e2;
-		} catch(Exception e2) {
-			e2.printStackTrace();
+		} catch(BaseServiceException e2) {
+			throw e2;
 		}
 		
 	}
 
 	@Override
-	public Customer get(int id) throws CustomerDAOException, CustomerNotFoundException {
+	public Customer get(int id) throws BaseDAOException, BaseServiceException {
 		
 		Customer customer = null;
 		
@@ -81,18 +77,16 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 			if(customer == null) {
 				throw new CustomerNotFoundException();
 			}
-		} catch(CustomerDAOException | CustomerNotFoundException e3) {
-			e3.printStackTrace();
+		} catch (BaseDAOException e3) {
 			throw e3;
-		} catch(Exception e3) {
-			e3.printStackTrace();
+		} catch(BaseServiceException e3) {
+			throw e3;
 		}
 		return customer;
 	}
 
 	@Override
-	public void delete(int id)
-			throws CustomerDAOException, CustomerNotFoundException {
+	public void delete(int id) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(customerDAO.get(id) == null) {
@@ -101,31 +95,26 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 			
 			customerDAO.delete(id);
 			
-		} catch(CustomerDAOException | CustomerNotFoundException e4) {
-			e4.printStackTrace();
+		} catch(BaseDAOException e4) {
 			throw e4;
-		} catch (Exception e4) {
-			e4.printStackTrace();
+		} catch(BaseServiceException e4) {
+			throw e4;
 		}
 		
 	}
 
 	@Override
-	public List<Customer> getAllByKeyword(KeywordType type, String kw)
-			throws CustomerDAOException {
+	public List<Customer> getAllByKeyword(KeywordType type, String kw) throws BaseDAOException {
 		
-		List<Customer> customers = new ArrayList<>(100);
+		List<Customer> customers = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			if(!kw.isEmpty()) {
 				customers = customerDAO.getAllByKeyword(type, kw);
 			}
 				
-		} catch (CustomerDAOException e5) {
-			e5.printStackTrace();
+		} catch (BaseDAOException e5) {
 			throw e5;
-		} catch(Exception e5) {
-			e5.printStackTrace();
 		}
 		
 		return customers;
@@ -137,20 +126,17 @@ public class CustomerServiceImpl implements IService<CustomerDTO, Customer> {
 	}
 
 	@Override
-	public List<Customer> getAll() throws CustomerDAOException {
+	public List<Customer> getAll() throws BaseDAOException {
 		
-		List<Customer> customers = new ArrayList<>(100);
+		List<Customer> customers = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			
 			customers = customerDAO.getAll();
 				
-		} catch (CustomerDAOException e6) {
-			e6.printStackTrace();
+		} catch (BaseDAOException e6) {
 			throw e6;
-		} catch(Exception e6) {
-			e6.printStackTrace();
-		}
+		} 
 		
 		return customers;
 	}

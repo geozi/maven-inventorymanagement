@@ -5,10 +5,11 @@ import java.util.List;
 
 import dao.IPrimaryEntityDAO;
 import dao.OrderDAOImpl;
-import dao.exceptions.OrderDAOException;
+import dao.exceptions.BaseDAOException;
 import model.KeywordType;
 import model.Order;
 import service.dto.OrderDTO;
+import service.exceptions.BaseServiceException;
 import service.exceptions.NoDataProvidedException;
 import service.exceptions.OrderNotFoundException;
 
@@ -25,7 +26,7 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 	}
 
 	@Override
-	public void insert(OrderDTO dto) throws OrderDAOException, NoDataProvidedException {
+	public void insert(OrderDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -34,17 +35,16 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 			Order order= map(dto);
 			orderDAO.insert(order);
 			
-		} catch(OrderDAOException | NoDataProvidedException e1) {
-			e1.printStackTrace();
+		} catch(BaseDAOException e1) {
 			throw e1;
-		} catch(Exception e1) {
-			e1.printStackTrace();
+		} catch(BaseServiceException e1) {
+			throw e1;
 		}
 		
 	}
 
 	@Override
-	public void update(OrderDTO dto) throws OrderDAOException, OrderNotFoundException, NoDataProvidedException {
+	public void update(OrderDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -57,17 +57,16 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 			}
 			orderDAO.update(order);
 			
-		} catch(OrderDAOException | NoDataProvidedException | OrderNotFoundException e2) {
-			e2.printStackTrace();
+		} catch(BaseDAOException e2) {
 			throw e2;
-		} catch(Exception e2) {
-			e2.printStackTrace();
+		} catch(BaseServiceException e2) {
+			throw e2;
 		}
 		
 	}
 
 	@Override
-	public Order get(int id) throws OrderDAOException, OrderNotFoundException {
+	public Order get(int id) throws BaseDAOException, BaseServiceException {
 		
 		Order order = null;
 		
@@ -76,18 +75,17 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 			if(order == null) {
 				throw new OrderNotFoundException();
 			}
-		} catch(OrderDAOException | OrderNotFoundException e3) {
-			e3.printStackTrace();
+		} catch(BaseDAOException e3) {
 			throw e3;
-		} catch(Exception e3) {
-			e3.printStackTrace();
-		}
+		}catch(BaseServiceException e3) {
+			throw e3;
+		} 
+		
 		return order;
 	}
 
 	@Override
-	public void delete(int id)
-			throws OrderDAOException, OrderNotFoundException {
+	public void delete(int id) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(orderDAO.get(id) == null) {
@@ -96,31 +94,27 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 			
 			orderDAO.delete(id);
 			
-		} catch(OrderDAOException | OrderNotFoundException e4) {
-			e4.printStackTrace();
+		} catch(BaseDAOException e4) {
 			throw e4;
-		} catch (Exception e4) {
-			e4.printStackTrace();
+		} catch(BaseServiceException e4) {
+			throw e4;
 		}
 		
 	}
 
 	@Override
-	public List<Order> getAllByKeyword(KeywordType type, String city)
-			throws OrderDAOException {
+	public List<Order> getAllByKeyword(KeywordType type, String city) throws BaseDAOException {
 		
-		List<Order> orders = new ArrayList<>(100);
+		List<Order> orders = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			if(!city.isEmpty()) {
 				orders = orderDAO.getAllByKeyword(type, city);
 			}
 				
-		} catch (OrderDAOException e5) {
+		} catch (BaseDAOException e5) {
 			e5.printStackTrace();
 			throw e5;
-		} catch(Exception e5) {
-			e5.printStackTrace();
 		}
 		
 		return orders;
@@ -132,19 +126,16 @@ public class OrderServiceImpl implements IService<OrderDTO, Order> {
 	}
 
 	@Override
-	public List<Order> getAll() throws OrderDAOException {
+	public List<Order> getAll() throws BaseDAOException {
 		
-		List<Order> orders = new ArrayList<>(100);
+		List<Order> orders = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			orders = orderDAO.getAll();
 				
-		} catch (OrderDAOException e6) {
-			e6.printStackTrace();
+		} catch (BaseDAOException e6) {
 			throw e6;
-		} catch(Exception e6) {
-			e6.printStackTrace();
-		}
+		} 
 		
 		return orders;
 	}

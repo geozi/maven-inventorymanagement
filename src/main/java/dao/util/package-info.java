@@ -1,5 +1,4 @@
 /**
- * It contains the {@link DBUtil} class, which is
- * responsible for establishing connections to the database.
+ * The dao.util package contains the {@link DBUtil} class.
  */
 package dao.util;

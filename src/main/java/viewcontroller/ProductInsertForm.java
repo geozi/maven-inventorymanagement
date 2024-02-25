@@ -5,8 +5,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import applauncher.Main;
-import dao.exceptions.ProductDAOException;
-import dao.exceptions.SupplierDAOException;
+import dao.exceptions.ProductInsertDAOException;
+import dao.exceptions.SupplierInsertDAOException;
 import model.Product;
 import model.Supplier;
 import service.IService;
@@ -75,7 +75,7 @@ public class ProductInsertForm extends JFrame {
 					
 					supplierList.setModel(dlm);
 					
-				} catch(SupplierDAOException e1) {
+				} catch(SupplierInsertDAOException e1) {
 					String errorSummary = e1.getMessage();
 					JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1) {
@@ -192,7 +192,7 @@ public class ProductInsertForm extends JFrame {
 					productService.insert(productDTO);
 					JOptionPane.showMessageDialog(null, "Product added to database", "Insert", JOptionPane.PLAIN_MESSAGE);
 					
-				} catch (ProductDAOException | NoDataProvidedException e1) {
+				} catch (ProductInsertDAOException | NoDataProvidedException e1) {
 					String errorSummary = e1.getMessage();
 					JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1) {

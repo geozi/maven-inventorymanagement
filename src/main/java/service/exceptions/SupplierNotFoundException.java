@@ -1,6 +1,10 @@
 package service.exceptions;
 
-public class SupplierNotFoundException extends Exception {
+/**
+ * The {@link SupplierNotFoundException} class is triggered
+ * when the specified Supplier record is not found in the database.
+ */
+public class SupplierNotFoundException extends BaseServiceException {
 
 	private static final long serialVersionUID = 1L;
 	

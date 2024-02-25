@@ -1,6 +1,10 @@
 package service.exceptions;
 
-public class CustomerNotFoundException extends Exception {
+/**
+ * The {@link CustomerNotFoundException} class is triggered
+ * when the specified Customer record is not found in the database.
+ */
+public class CustomerNotFoundException extends BaseServiceException {
 
 	private static final long serialVersionUID = 1L;
 	

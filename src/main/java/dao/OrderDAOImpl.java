@@ -10,7 +10,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.exceptions.OrderDAOException;
+import dao.exceptions.InvalidKeywordDAOException;
+import dao.exceptions.OrderDeleteDAOException;
+import dao.exceptions.OrderGetAllDAOException;
+import dao.exceptions.OrderGetByKeywordDAOException;
+import dao.exceptions.OrderGetDAOException;
+import dao.exceptions.OrderInsertDAOException;
+import dao.exceptions.OrderUpdateDAOException;
 import dao.util.DBUtil;
 
 import java.sql.ResultSet;
@@ -33,10 +39,9 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 	private ResultSet rs;
 	private Order order;
 	private ArrayList<Order> orders;
-	private int lastInsertId;
 
 	@Override
-	public void insert(Order order) throws OrderDAOException {
+	public void insert(Order order) throws OrderInsertDAOException {
 		
 		customerID = order.getCustomerID();
 		quantity = order.getQuantity();
@@ -52,31 +57,32 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 		try(Connection connection = DBUtil.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql)){
 			
-			ps.setString(1, Integer.toString(customerID));
-			ps.setString(2, Integer.toString(quantity));
-			ps.setString(3, Double.toString(price));
+			ps.setInt(1, customerID);
+			ps.setInt(2, quantity);
+			ps.setDouble(3, price);
 			ps.setString(4, shippingAddress);
 			ps.setString(5, city);
 			ps.executeUpdate();
 			
 		} catch(SQLException e1) {
-			throw new OrderDAOException("SQL Error in Order record addition");
+			throw new OrderInsertDAOException();
 		}
 
 	}
 
 	@Override
-	public Order get(int id) throws OrderDAOException {
+	public Order get(int id) throws OrderGetDAOException {
 		
 		sql = "SELECT * FROM Order WHERE ID=?";
 		
 		try(Connection connection = DBUtil.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)){
 			
-			ps.setString(1, Integer.toString(id));
+			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
+				this.id = rs.getInt("ID");
 				customerID = rs.getInt("Customer_ID");
 				quantity = rs.getInt("Quantity");
 				price = rs.getDouble("Price");
@@ -84,17 +90,17 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 				city = rs.getString("City");
 			}
 			
-			order = new Order(id, customerID, quantity, price, shippingAddress, city);
+			order = new Order(this.id, customerID, quantity, price, shippingAddress, city);
 			
 			
 		} catch(SQLException e2) {
-			throw new OrderDAOException("SQL Error in retrieving a specified Order record");
+			throw new OrderGetDAOException();
 		}
 		return order;
 	}
 
 	@Override
-	public void update(Order order) throws OrderDAOException {
+	public void update(Order order) throws OrderUpdateDAOException {
 		
 		id = order.getId();
 		customerID = order.getCustomerID();
@@ -111,38 +117,38 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 		try(Connection connection = DBUtil.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql)){
 			
-			ps.setString(1, Integer.toString(customerID));
-			ps.setString(2, Integer.toString(quantity));
-			ps.setString(3, Double.toString(price));
+			ps.setInt(1, customerID);
+			ps.setInt(2, quantity);
+			ps.setDouble(3, price);
 			ps.setString(4, shippingAddress);
 			ps.setString(5,city);
-			ps.setString(6, Integer.toString(id));
+			ps.setInt(6, id);
 			ps.executeUpdate();
 			
 		} catch(SQLException e3) {
-			throw new OrderDAOException("SQL Error in Order record update");
+			throw new OrderUpdateDAOException();
 		}
 	}
 
 	@Override
-	public void delete(int id) throws OrderDAOException {
+	public void delete(int id) throws OrderDeleteDAOException {
 		
 		sql = "DELETE FROM Order WHERE ID=?";
 		
 		try (Connection connection = DBUtil.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql)) {
 			
-			ps.setString(1, Integer.toString(id));
+			ps.setInt(1, id);
 			ps.executeUpdate();
 			
 		} catch(SQLException e4) {
-			throw new OrderDAOException("SQL Error in Order record deletion");
+			throw new OrderDeleteDAOException();
 		}
 
 	}
 
 	@Override
-	public List<Order> getAllByKeyword(KeywordType t, String kw) throws OrderDAOException {
+	public List<Order> getAllByKeyword(KeywordType t, String kw) throws InvalidKeywordDAOException, OrderGetByKeywordDAOException {
 		
 		try {
 			if(t.equals(KeywordType.CITY)) {
@@ -152,7 +158,7 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 			}
  			
 		} catch (SQLException e5) {
-			throw new OrderDAOException("SQL Error in forming query statement");
+			throw new InvalidKeywordDAOException();
 		}
 		
 		
@@ -163,7 +169,7 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 				
 				System.out.println("Connection is established");
 				
-				orders = new ArrayList<>(100);
+				orders = new ArrayList<>(LIST_CAPACITY);
 				
 				ps.setString(1, kw+"%");
 				rs = ps.executeQuery();
@@ -172,7 +178,7 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 					id = rs.getInt("ID");
 					customerID = rs.getInt("Customer_ID");
 					quantity = rs.getInt("Quantity");
-					price = Double.parseDouble(rs.getString("Price"));
+					price = rs.getDouble("Price");
 					shippingAddress = rs.getString("Shipping_Address");
 					city = rs.getString("City");
 					
@@ -181,37 +187,15 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 			}
 			
 		} catch (SQLException e6) {
-			throw new OrderDAOException("SQL Error in retrieving Order records");
+			throw new OrderGetByKeywordDAOException();
 		}
 		
 		return orders;
 	}
-	
-	@Override
-	public int getLastInsertID() throws OrderDAOException {
-		
-		sql = "SELECT LAST_INSERT_ID() as ID";
-		
-		try(Connection connection = DBUtil.getConnection();
-				Statement smt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-			
-			if(connection.isValid(TIMEOUT)) {
-				
-				System.out.println("Connection is established");
-				
-				rs = smt.executeQuery(sql);
-				lastInsertId = rs.getInt("ID");
-			}
-			
-		} catch(SQLException e7) {
-			throw new OrderDAOException("SQL Error in LAST_INSERT_ID() from Order operation");
-		}
-		
-		return lastInsertId;
-	}
+
 
 	@Override
-	public List<Order> getAll() throws OrderDAOException {
+	public List<Order> getAll() throws OrderGetAllDAOException {
 		 
 		sql = "SELECT * FROM `Order`";
 		
@@ -222,14 +206,14 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 				
 				System.out.println("Connection is established");
 				
-				orders = new ArrayList<>(100);
+				orders = new ArrayList<>(LIST_CAPACITY);
 				rs = stmt.executeQuery(sql);
 				
 				while(rs.next()) {
 					id = rs.getInt("ID");
 					customerID = rs.getInt("Customer_ID");
 					quantity = rs.getInt("Quantity");
-					price = Double.parseDouble(rs.getString("Price"));
+					price = rs.getDouble("Price");
 					shippingAddress = rs.getString("Shipping_Address");
 					city = rs.getString("City");
 					
@@ -238,12 +222,10 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 			}
 			
 		} catch (SQLException e8) {
-			throw new OrderDAOException("SQL Error in retrieving Order records");
+			throw new OrderGetAllDAOException();
 		}
 		
 		return orders;
 	}
-	
-	
 	
 }

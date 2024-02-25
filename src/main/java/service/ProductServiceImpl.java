@@ -5,10 +5,11 @@ import java.util.List;
 
 import dao.IPrimaryEntityDAO;
 import dao.ProductDAOImpl;
-import dao.exceptions.ProductDAOException;
+import dao.exceptions.BaseDAOException;
 import model.KeywordType;
 import model.Product;
 import service.dto.ProductDTO;
+import service.exceptions.BaseServiceException;
 import service.exceptions.NoDataProvidedException;
 import service.exceptions.ProductNotFoundException;
 
@@ -25,7 +26,7 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 	}
 
 	@Override
-	public void insert(ProductDTO dto) throws ProductDAOException, NoDataProvidedException {
+	public void insert(ProductDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -35,17 +36,16 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 			Product product= map(dto);
 			productDAO.insert(product);
 			
-		} catch(ProductDAOException | NoDataProvidedException e1) {
-			e1.printStackTrace();
+		} catch(BaseDAOException e1) {
 			throw e1;
-		} catch(Exception e1) {
-			e1.printStackTrace();
+		} catch(BaseServiceException e1) {
+			throw e1;
 		}
 		
 	}
 
 	@Override
-	public void update(ProductDTO dto) throws ProductDAOException, ProductNotFoundException, NoDataProvidedException {
+	public void update(ProductDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -58,18 +58,16 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 			}
 			productDAO.update(product);
 			
-		} catch(ProductDAOException | NoDataProvidedException | ProductNotFoundException e2) {
-			e2.printStackTrace();
+		} catch(BaseDAOException e2) {
 			throw e2;
-		} catch(Exception e2) {
-			e2.printStackTrace();
+		} catch(BaseServiceException e2) {
+			throw e2;
 		}
 		
 	}
 
 	@Override
-	public Product get(int id)
-			throws ProductDAOException, ProductNotFoundException {
+	public Product get(int id) throws BaseDAOException, BaseServiceException {
 		
 		Product product = null;
 		
@@ -78,18 +76,16 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 			if(product == null) {
 				throw new ProductNotFoundException();
 			}
-		} catch(ProductDAOException | ProductNotFoundException e3) {
-			e3.printStackTrace();
+		} catch(BaseDAOException e3) {
 			throw e3;
-		} catch(Exception e3) {
-			e3.printStackTrace();
+		} catch(BaseServiceException e3) {
+			throw e3;
 		}
 		return product;
 	}
 
 	@Override
-	public void delete(int id)
-			throws ProductDAOException, ProductNotFoundException {
+	public void delete(int id) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(productDAO.get(id) == null) {
@@ -98,31 +94,26 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 			
 			productDAO.delete(id);
 			
-		} catch(ProductDAOException | ProductNotFoundException e4) {
-			e4.printStackTrace();
+		} catch(BaseDAOException e4) {
 			throw e4;
-		} catch (Exception e4) {
-			e4.printStackTrace();
+		} catch (BaseServiceException e4) {
+			throw e4;
 		}
 		
 	}
 
 	@Override
-	public List<Product> getAllByKeyword(KeywordType type, String name)
-			throws ProductDAOException {
+	public List<Product> getAllByKeyword(KeywordType type, String name) throws BaseDAOException {
 		
-		List<Product> products = new ArrayList<>(100);
+		List<Product> products = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			if(!name.isEmpty()) {
 				products = productDAO.getAllByKeyword(type, name);
 			}
 				
-		} catch (ProductDAOException e5) {
-			e5.printStackTrace();
+		} catch (BaseDAOException e5) {
 			throw e5;
-		} catch(Exception e5) {
-			e5.printStackTrace();
 		}
 		
 		return products;
@@ -134,20 +125,17 @@ public class ProductServiceImpl implements IService<ProductDTO, Product> {
 	}
 
 	@Override
-	public List<Product> getAll() throws ProductDAOException {
+	public List<Product> getAll() throws BaseDAOException {
 		
-		List<Product> products = new ArrayList<>(100);
+		List<Product> products = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			
 			products = productDAO.getAll();
 				
-		} catch (ProductDAOException e6) {
-			e6.printStackTrace();
+		} catch (BaseDAOException e6) {
 			throw e6;
-		} catch(Exception e6) {
-			e6.printStackTrace();
-		}
+		} 
 		
 		return products;
 	}

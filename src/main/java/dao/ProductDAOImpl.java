@@ -10,7 +10,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.exceptions.ProductDAOException;
+import dao.exceptions.InvalidKeywordDAOException;
+import dao.exceptions.ProductDeleteDAOException;
+import dao.exceptions.ProductGetAllDAOException;
+import dao.exceptions.ProductGetByKeywordDAOException;
+import dao.exceptions.ProductGetDAOException;
+import dao.exceptions.ProductInsertDAOException;
+import dao.exceptions.ProductUpdateDAOException;
 import dao.util.DBUtil;
 
 import java.sql.ResultSet;
@@ -33,10 +39,9 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 	private ResultSet rs;
 	private Product product;
 	private ArrayList<Product> products;
-	private int lastInsertId;
 
 	@Override
-	public void insert(Product product) throws ProductDAOException {
+	public void insert(Product product) throws ProductInsertDAOException {
 		
 		name = product.getName();
 		description = product.getDescription();
@@ -58,20 +63,20 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				ps.setString(1, name);
 				ps.setString(2, description);
-				ps.setString(3, Double.toString(unitPrice));
-				ps.setString(4, Integer.toString(quantity));
-				ps.setString(5, Integer.toString(supplierID));
+				ps.setDouble(3, unitPrice);
+				ps.setInt(4, quantity);
+				ps.setInt(5, supplierID);
 				ps.executeUpdate();
 			}
 
 		} catch(SQLException e1) {
-			throw new ProductDAOException("SQL Error in Product record addition");
+			throw new ProductInsertDAOException();
 		}
 
 	}
 
 	@Override
-	public Product get(int id) throws ProductDAOException {
+	public Product get(int id) throws ProductGetDAOException {
 		
 		sql = "SELECT * FROM Product WHERE ID=?";
 		
@@ -82,29 +87,30 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				System.out.println("Connection is established");
 				
-				ps.setString(1, Integer.toString(id));
+				ps.setInt(1, id);
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
+					this.id = rs.getInt("ID");
 					name = rs.getString("Name");
 					description = rs.getString("Description");
-					unitPrice = Double.parseDouble(rs.getString("Unit_Price")) ;
+					unitPrice = rs.getDouble("Unit_Price") ;
 					quantity = rs.getInt("Quantity");
 					supplierID = rs.getInt("Supplier_ID");
 				}
 				
-				product = new Product(id, name, description, unitPrice, quantity, supplierID);
+				product = new Product(this.id, name, description, unitPrice, quantity, supplierID);
 			}
 			
 		} catch(SQLException e2) {
-			throw new ProductDAOException("SQL Error in retrieving a specified Product record");
+			throw new ProductGetDAOException();
 		}
 		
 		return product;
 	}
 
 	@Override
-	public void update(Product product) throws ProductDAOException {
+	public void update(Product product) throws ProductUpdateDAOException {
 		
 		id = product.getId();
 		name = product.getName();
@@ -127,22 +133,22 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				ps.setString(1, name);
 				ps.setString(2, description);
-				ps.setString(3, Double.toString(unitPrice));
-				ps.setString(4, Integer.toString(quantity));
-				ps.setString(5, Integer.toString(supplierID));
-				ps.setString(6, Integer.toString(id));
+				ps.setDouble(3, unitPrice);
+				ps.setInt(4, quantity);
+				ps.setInt(5, supplierID);
+				ps.setInt(6, id);
 				ps.executeUpdate();
 			}
 			
 			
 		} catch(SQLException e3) {
-			throw new ProductDAOException("SQL Error in Product record update");
+			throw new ProductUpdateDAOException();
 		}
 
 	}
 
 	@Override
-	public void delete(int id) throws ProductDAOException {
+	public void delete(int id) throws ProductDeleteDAOException {
 		
 		sql = "DELETE FROM Product WHERE ID=?";
 		
@@ -153,17 +159,17 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				System.out.println("Connection is established");
 				
-				ps.setString(1,Integer.toString(id));
+				ps.setInt(1,id);
 				ps.executeUpdate();
 			}
 			
 		}catch(SQLException e4) {
-			throw new ProductDAOException("SQL Error in Product record deletion");
+			throw new ProductDeleteDAOException();
 		}
 	}
 
 	@Override
-	public List<Product> getAllByKeyword(KeywordType t, String kw) throws ProductDAOException {
+	public List<Product> getAllByKeyword(KeywordType t, String kw) throws InvalidKeywordDAOException, ProductGetByKeywordDAOException {
 		
 		try {
 			if(t.equals(KeywordType.NAME)) {
@@ -173,7 +179,7 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 			}
 			
 		} catch (SQLException e5) {
-			throw new ProductDAOException("SQL Error in forming query statement");
+			throw new InvalidKeywordDAOException();
 		}
 		
 		
@@ -184,7 +190,7 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				System.out.println("Connection is established");
 				
-				products = new ArrayList<>(100);
+				products = new ArrayList<>(LIST_CAPACITY);
 				
 				ps.setString(1, kw+"%");
 				rs = ps.executeQuery();
@@ -193,7 +199,7 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 					id = rs.getInt("ID");
 					name = rs.getString("Name");
 					description = rs.getString("Description");
-					unitPrice =Double.parseDouble(rs.getString("Unit_Price"));
+					unitPrice =rs.getDouble("Unit_Price");
 					quantity = rs.getInt("Quantity");
 					supplierID = rs.getInt("Supplier_ID");
 					
@@ -202,37 +208,14 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 			}
 			
 		} catch(SQLException e6) {
-			throw new ProductDAOException("SQL Error in retrieving Product records");
+			throw new ProductGetByKeywordDAOException();
 		}
 		
 		return products;
 	}
-	
-	@Override
-	public int getLastInsertID() throws ProductDAOException {
-		
-		sql = "SELECT LAST_INSERT_ID() as ID";
-		
-		try(Connection connection = DBUtil.getConnection();
-				Statement smt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-			
-			if(connection.isValid(TIMEOUT)) {
-				
-				System.out.println("Connection is established");
-				
-				rs = smt.executeQuery(sql);
-				lastInsertId = rs.getInt("ID");
-			}
-			
-		} catch(SQLException e7) {
-			throw new ProductDAOException("SQL Error in LAST_INSERT_ID() from Product operation");
-		}
-		
-		return lastInsertId;
-	}
 
 	@Override
-	public List<Product> getAll() throws ProductDAOException {
+	public List<Product> getAll() throws ProductGetAllDAOException {
 		
 		sql = "SELECT * FROM Product";
 		
@@ -243,14 +226,14 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 				
 				System.out.println("Connection is established");
 				
-				products = new ArrayList<>(100);
+				products = new ArrayList<>(LIST_CAPACITY);
 				rs = stmt.executeQuery(sql);
 				
 				while(rs.next()) {
 					id = rs.getInt("ID");
 					name = rs.getString("Name");
 					description = rs.getString("Description");
-					unitPrice =Double.parseDouble(rs.getString("Unit_Price"));
+					unitPrice =rs.getDouble("Unit_Price");
 					quantity = rs.getInt("Quantity");
 					supplierID = rs.getInt("Supplier_ID");
 					
@@ -259,7 +242,7 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 			}
 			
 		} catch(SQLException e8) {
-			throw new ProductDAOException("SQL Error in retrieving Product records");
+			throw new ProductGetAllDAOException();
 		}
 		
 		return products;

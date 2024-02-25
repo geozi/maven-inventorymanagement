@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import applauncher.Main;
-import dao.exceptions.SupplierDAOException;
+import dao.exceptions.SupplierInsertDAOException;
 import model.Supplier;
 import service.SupplierServiceImpl;
 import service.IService;
@@ -150,7 +150,7 @@ public class SupplierInsertForm extends JFrame {
 					addressTxt.setText("");
 					cityTxt.setText("");
 					
-				} catch(SupplierDAOException | NoDataProvidedException e1) {
+				} catch(SupplierInsertDAOException | NoDataProvidedException e1) {
 					String errorSummary = e1.getMessage();
 					JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 				} catch(Exception e1) {

@@ -10,7 +10,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.exceptions.CustomerDAOException;
+import dao.exceptions.CustomerDeleteDAOException;
+import dao.exceptions.CustomerGetAllDAOException;
+import dao.exceptions.CustomerGetByKeywordDAOException;
+import dao.exceptions.CustomerGetDAOException;
+import dao.exceptions.CustomerInsertDAOException;
+import dao.exceptions.CustomerUpdateDAOException;
+import dao.exceptions.InvalidKeywordDAOException;
 import dao.util.DBUtil;
 
 import java.sql.ResultSet;
@@ -34,10 +40,9 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 	private ResultSet rs;
 	private Customer customer;
 	private ArrayList<Customer> customers;
-	private int lastInsertId;
 
 	@Override
-	public void insert(Customer customer) throws CustomerDAOException {
+	public void insert(Customer customer) throws CustomerInsertDAOException {
 		
 		firstname = customer.getFirstname();
 		lastname = customer.getLastname();
@@ -69,12 +74,12 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 			}
 			
 		} catch (SQLException e1) {
-			throw new CustomerDAOException("SQL Error in Customer record addition");
+			throw new CustomerInsertDAOException();
 		}
 	}
 
 	@Override
-	public Customer get(int id) throws CustomerDAOException {
+	public Customer get(int id) throws CustomerGetDAOException {
 		
 		sql = "SELECT * FROM Customer WHERE ID=?";
 		
@@ -85,10 +90,11 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				
 				System.out.println("Connection is established");
 				
-				ps.setString(1, Integer.toString(id));
+				ps.setInt(1, id);
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
+					this.id = rs.getInt("ID");
 					firstname = rs.getString("Firstname");
 					lastname = rs.getString("Lastname");
 					mobilePhone = rs.getString("Mobile_Phone");
@@ -97,17 +103,17 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 					city = rs.getString("City");
 				}
 				
-				customer = new Customer(id, firstname, lastname, mobilePhone, email, billingAddress, city);
+				customer = new Customer(this.id, firstname, lastname, mobilePhone, email, billingAddress, city);
 			}
 			
 		} catch (SQLException e2) {
-			throw new CustomerDAOException("SQL Error in retrieving a specified Customer record");
+			throw new CustomerGetDAOException();
 		}
 		return customer;
 	}
 
 	@Override
-	public void update(Customer customer) throws CustomerDAOException {
+	public void update(Customer customer) throws CustomerUpdateDAOException {
 		
 		id = customer.getId();
 		firstname = customer.getFirstname();
@@ -135,18 +141,18 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				ps.setString(4, email);
 				ps.setString(5, billingAddress);
 				ps.setString(6, city);
-				ps.setString(7, Integer.toString(id));
+				ps.setInt(7, id);
 				ps.executeUpdate();
 			}
 
 			
 		} catch(SQLException e3) {
-			throw new CustomerDAOException("SQL Error in Customer record update");
+			throw new CustomerUpdateDAOException();
 		}
 	}
 
 	@Override
-	public void delete(int id) throws CustomerDAOException {
+	public void delete(int id) throws CustomerDeleteDAOException {
 		
 		sql = "DELETE FROM Customer WHERE ID=?";
 		
@@ -157,18 +163,18 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				
 				System.out.println("Connection is established");
 				
-				ps.setString(1, Integer.toString(id));
+				ps.setInt(1, id);
 				ps.executeUpdate();
 			}
 			
 		} catch(SQLException e4) {
-			throw new CustomerDAOException("SQL Error in Customer record deletion");
+			throw new CustomerDeleteDAOException();
 		}
 		
 	}
 
 	@Override
-	public List<Customer> getAllByKeyword(KeywordType t, String kw) throws CustomerDAOException {
+	public List<Customer> getAllByKeyword(KeywordType t, String kw) throws InvalidKeywordDAOException, CustomerGetByKeywordDAOException {
 		
 		try {
 			if(t.equals(KeywordType.LASTNAME)) {
@@ -179,7 +185,7 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				throw new SQLException();
 			}
 		} catch (SQLException e5) {
-			throw new CustomerDAOException("SQL Error in forming query statement");
+			throw new InvalidKeywordDAOException();
 		}
 		
 		
@@ -190,7 +196,7 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				
 				System.out.println("Connection is established");
 				
-				customers = new ArrayList<>(100);
+				customers = new ArrayList<>(LIST_CAPACITY);
 				
 				ps.setString(1, kw+"%");
 				rs = ps.executeQuery();
@@ -210,37 +216,14 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 			}
 			
 		} catch(SQLException e6) {
-			throw new CustomerDAOException("SQL Error in retrieving Customer records");
+			throw new CustomerGetByKeywordDAOException();
 		}
 			
 		return  customers;
 	}
 
 	@Override
-	public int getLastInsertID() throws CustomerDAOException {
-		
-		sql = "SELECT LAST_INSERT_ID() as ID";
-		
-		try(Connection connection = DBUtil.getConnection();
-				Statement smt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-			
-			if(connection.isValid(TIMEOUT)) {
-				
-				System.out.println("Connection is established");
-				
-				rs = smt.executeQuery(sql);
-				lastInsertId = rs.getInt("ID");
-			}
-			
-		} catch(SQLException e7) {
-			throw new CustomerDAOException("SQL Error in LAST_INSERT_ID() from Customer operation");
-		}
-		
-		return lastInsertId;
-	}
-
-	@Override
-	public List<Customer> getAll() throws CustomerDAOException {
+	public List<Customer> getAll() throws CustomerGetAllDAOException {
 		
 		sql = "SELECT * FROM Customer";
 		
@@ -251,7 +234,7 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 				
 				System.out.println("Connection is established");
 				
-				customers = new ArrayList<>(100);
+				customers = new ArrayList<>(LIST_CAPACITY);
 				rs = stmt.executeQuery(sql);
 				
 				while(rs.next()) {
@@ -269,12 +252,10 @@ public class CustomerDAOImpl implements IPrimaryEntityDAO<Customer> {
 			}
 			
 		} catch(SQLException e8) {
-			throw new CustomerDAOException("SQL Error in retrieving Customer records");
+			throw new CustomerGetAllDAOException();
 		}
 		
 		return customers;
 	}
-	
-	
 
 }

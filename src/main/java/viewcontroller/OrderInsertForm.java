@@ -5,8 +5,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import applauncher.Main;
-import dao.exceptions.CustomerDAOException;
-import dao.exceptions.OrderDAOException;
+import dao.exceptions.CustomerInsertDAOException;
+import dao.exceptions.OrderInsertDAOException;
 import model.Customer;
 import model.Order;
 import service.dto.CustomerDTO;
@@ -75,7 +75,7 @@ public class OrderInsertForm extends JFrame {
 					
 					customerList.setModel(dlm);
 					
-				} catch(CustomerDAOException e1) {
+				} catch(CustomerInsertDAOException e1) {
 					String errorSummary = e1.getMessage();
 					JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1) {
@@ -190,7 +190,7 @@ public class OrderInsertForm extends JFrame {
 					orderService.insert(orderDTO);
 					JOptionPane.showMessageDialog(null, "Order added to database", "Insert", JOptionPane.PLAIN_MESSAGE);
 					
-				} catch (OrderDAOException | NoDataProvidedException e1) {
+				} catch (OrderInsertDAOException | NoDataProvidedException e1) {
 					String errorSummary = e1.getMessage();
 					JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1) {

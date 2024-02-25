@@ -84,12 +84,4 @@ public class OrderDTO extends BaseDTO {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
-	// Object State Display
-	
-	@Override
-	public String toString() {
-		return "OrderDTO [customerID=" + customerID + ", quantity=" + quantity + ", price=" + price
-				+ ", shippingAddress=" + shippingAddress + ", city=" + city + "]";
-	}
 }

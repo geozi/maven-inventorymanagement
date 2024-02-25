@@ -6,6 +6,10 @@ import java.sql.SQLException;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+/**
+ * The {@link DBUtil} class is responsible for establishing 
+ * connections to the database.
+ */
 public class DBUtil {
 	private static BasicDataSource ds = new BasicDataSource();
 	private static Connection connection;

@@ -5,10 +5,11 @@ import java.util.List;
 
 import dao.IPrimaryEntityDAO;
 import dao.SupplierDAOImpl;
-import dao.exceptions.SupplierDAOException;
+import dao.exceptions.BaseDAOException;
 import model.KeywordType;
 import model.Supplier;
 import service.dto.SupplierDTO;
+import service.exceptions.BaseServiceException;
 import service.exceptions.NoDataProvidedException;
 import service.exceptions.SupplierNotFoundException;
 
@@ -27,7 +28,7 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 	}
 
 	@Override
-	public void insert(SupplierDTO dto) throws SupplierDAOException, NoDataProvidedException {
+	public void insert(SupplierDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -37,17 +38,16 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 			Supplier supplier= map(dto);
 			supplierDAO.insert(supplier);
 			
-		} catch(SupplierDAOException | NoDataProvidedException e1) {
-			e1.printStackTrace();
+		} catch(BaseDAOException e1) {
 			throw e1;
-		} catch(Exception e1) {
-			e1.printStackTrace();
+		} catch(BaseServiceException e1) {
+			throw e1;
 		}
 		
 	}
 
 	@Override
-	public void update(SupplierDTO dto) throws SupplierDAOException, SupplierNotFoundException, NoDataProvidedException {
+	public void update(SupplierDTO dto) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(dto == null) {
@@ -60,18 +60,16 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 			}
 			supplierDAO.update(supplier);
 			
-		} catch(SupplierDAOException | NoDataProvidedException | SupplierNotFoundException e2) {
-			e2.printStackTrace();
+		} catch(BaseDAOException e2) {
 			throw e2;
-		} catch(Exception e2) {
-			e2.printStackTrace();
+		} catch(BaseServiceException e2) {
+			throw e2;
 		}
 		
 	}
 
 	@Override
-	public Supplier get(int id)
-			throws SupplierDAOException, SupplierNotFoundException {
+	public Supplier get(int id) throws BaseDAOException, BaseServiceException {
 		
 		Supplier supplier = null;
 		
@@ -80,18 +78,16 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 			if(supplier == null) {
 				throw new SupplierNotFoundException();
 			}
-		} catch(SupplierDAOException | SupplierNotFoundException e3) {
-			e3.printStackTrace();
+		} catch(BaseDAOException e3) {
 			throw e3;
-		} catch(Exception e3) {
-			e3.printStackTrace();
+		} catch(BaseServiceException e3) {
+			throw e3;
 		}
 		return supplier;
 	}
 
 	@Override
-	public void delete(int id)
-			throws SupplierDAOException, SupplierNotFoundException {
+	public void delete(int id) throws BaseDAOException, BaseServiceException {
 		
 		try {
 			if(supplierDAO.get(id) == null) {
@@ -100,32 +96,27 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 			
 			supplierDAO.delete(id);
 			
-		} catch(SupplierDAOException | SupplierNotFoundException e4) {
-			e4.printStackTrace();
+		} catch(BaseDAOException e4) {
 			throw e4;
-		} catch (Exception e4) {
-			e4.printStackTrace();
+		} catch (BaseServiceException e4) {
+			throw e4;
 		}
 		
 	}
 
 	@Override
-	public List<Supplier> getAllByKeyword(KeywordType type, String kw)
-			throws SupplierDAOException {
+	public List<Supplier> getAllByKeyword(KeywordType type, String kw) throws BaseDAOException {
 		
-		List<Supplier> suppliers = new ArrayList<>(100);
+		List<Supplier> suppliers = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			if(!kw.isEmpty()) {
 				suppliers = supplierDAO.getAllByKeyword(type, kw);
 			}
 				
-		} catch (SupplierDAOException e5) {
-			e5.printStackTrace();
+		} catch (BaseDAOException e5) {
 			throw e5;
-		} catch(Exception e5) {
-			e5.printStackTrace();
-		}
+		} 
 		
 		return suppliers;
 	}
@@ -136,20 +127,17 @@ public class SupplierServiceImpl implements IService<SupplierDTO, Supplier> {
 	}
 
 	@Override
-	public List<Supplier> getAll() throws SupplierDAOException {
+	public List<Supplier> getAll() throws BaseDAOException {
 
-		List<Supplier> suppliers = new ArrayList<>(100);
+		List<Supplier> suppliers = new ArrayList<>(LIST_CAPACITY);
 		
 		try {
 			
 			suppliers = supplierDAO.getAll();
 				
-		} catch (SupplierDAOException e6) {
-			e6.printStackTrace();
+		} catch (BaseDAOException e6) {
 			throw e6;
-		} catch(Exception e6) {
-			e6.printStackTrace();
-		}
+		} 
 		
 		return suppliers;
 	}

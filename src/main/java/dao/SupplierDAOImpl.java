@@ -10,7 +10,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.exceptions.SupplierDAOException;
+import dao.exceptions.InvalidKeywordDAOException;
+import dao.exceptions.SupplierDeleteDAOException;
+import dao.exceptions.SupplierGetAllDAOException;
+import dao.exceptions.SupplierGetByKeywordDAOException;
+import dao.exceptions.SupplierGetDAOException;
+import dao.exceptions.SupplierInsertDAOException;
+import dao.exceptions.SupplierUpdateDAOException;
 import dao.util.DBUtil;
 
 import java.sql.ResultSet;
@@ -33,10 +39,9 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 	private ResultSet rs;
 	private Supplier supplier;
 	private ArrayList<Supplier> suppliers;
-	private int lastInsertId;
 
 	@Override
-	public void insert(Supplier supplier) throws SupplierDAOException {
+	public void insert(Supplier supplier) throws SupplierInsertDAOException {
 		
 		name = supplier.getName();
 		mobilePhone = supplier.getMobilePhone();
@@ -65,13 +70,13 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 			}
 			
 		} catch(SQLException e1) {
-			throw new SupplierDAOException("SQL Error in Supplier record addition");
+			throw new SupplierInsertDAOException();
 		}
 
 	}
 
 	@Override
-	public Supplier get(int id) throws SupplierDAOException {
+	public Supplier get(int id) throws SupplierGetDAOException {
 		
 		sql = "SELECT * FROM Supplier WHERE ID=?";
 		
@@ -81,10 +86,11 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 			if(connection.isValid(TIMEOUT)) {
 				System.out.println("Connection is established");
 				
-				ps.setString(1, Integer.toString(id));
+				ps.setInt(1, id);
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
+					this.id = rs.getInt("ID");
 					name = rs.getString("Name");
 					mobilePhone = rs.getString("Mobile_Phone");
 					email = rs.getString("Email");;
@@ -92,17 +98,17 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 					city = rs.getString("City");
 				}
 				
-				supplier = new Supplier(id, name, mobilePhone, email, address, city);
+				supplier = new Supplier(this.id, name, mobilePhone, email, address, city);
 			}
 			
 		} catch (SQLException e2) {
-			throw new SupplierDAOException("SQL Error in retrieving a specifed Supplier record");
+			throw new SupplierGetDAOException();
 		}
 		return supplier;
 	}
 
 	@Override
-	public void update(Supplier supplier) throws SupplierDAOException {
+	public void update(Supplier supplier) throws SupplierUpdateDAOException {
 		
 		id = supplier.getId();
 		name = supplier.getName();
@@ -128,18 +134,18 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 				ps.setString(3, email);
 				ps.setString(4, address);
 				ps.setString(5, city);
-				ps.setString(6, Integer.toString(id));
+				ps.setInt(6, id);
 				ps.executeUpdate();
 				
 			}
 			
 		} catch(SQLException e3) {
-			throw new SupplierDAOException("SQL Error in Supplier record update");
+			throw new SupplierUpdateDAOException();
 		}
 	}
 
 	@Override
-	public void delete(int id) throws SupplierDAOException {
+	public void delete(int id) throws SupplierDeleteDAOException {
 		
 		sql = "DELETE FROM Supplier WHERE ID=?";
 		
@@ -150,18 +156,18 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 				
 				System.out.println("Connection is established");
 				
-				ps.setString(1, Integer.toString(id));
+				ps.setInt(1, id);
 				ps.executeUpdate();
 			}
 
 			
 		} catch(SQLException e4) {
-			throw new SupplierDAOException("SQL Error in Supplier record deletion");
+			throw new SupplierDeleteDAOException();
 		}
 	}
 
 	@Override
-	public List<Supplier> getAllByKeyword(KeywordType t, String kw) throws SupplierDAOException {
+	public List<Supplier> getAllByKeyword(KeywordType t, String kw) throws InvalidKeywordDAOException, SupplierGetByKeywordDAOException {
 		
 		try {
 			if(t.equals(KeywordType.NAME)) {
@@ -173,7 +179,7 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 			}
 			
 		} catch(SQLException e5) {
-			throw new SupplierDAOException("SQL Error in forming query statement");
+			throw new InvalidKeywordDAOException();
 		}
 		
 		try(Connection connection = DBUtil.getConnection();
@@ -183,7 +189,7 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 				
 				System.out.println("Connection is established");
 				
-				suppliers = new ArrayList<>(100);
+				suppliers = new ArrayList<>(LIST_CAPACITY);
 				
 				ps.setString(1, kw+"%");
 				rs = ps.executeQuery();
@@ -201,37 +207,14 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 			}
 			
 		} catch (SQLException e6) {
-			throw new SupplierDAOException("SQL Error in retrieving Supplier records");
+			throw new SupplierGetByKeywordDAOException();
 		}
 		
 		return suppliers;
 	}
-	
-	@Override
-	public int getLastInsertID() throws SupplierDAOException {
-		
-		sql = "SELECT LAST_INSERT_ID() as ID";
-		
-		try(Connection connection = DBUtil.getConnection();
-				Statement smt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-			
-			if(connection.isValid(TIMEOUT)) {
-				
-				System.out.println("Connection is established");
-				
-				rs = smt.executeQuery(sql);
-				lastInsertId = rs.getInt("ID");
-			}
-			
-		} catch(SQLException e7) {
-			throw new SupplierDAOException("SQL Error in LAST_INSERT_ID() from Supplier operation");
-		}
-		
-		return lastInsertId;
-	}
 
 	@Override
-	public List<Supplier> getAll() throws SupplierDAOException {
+	public List<Supplier> getAll() throws SupplierGetAllDAOException {
 		
 		sql = "SELECT * FROM Supplier";
 		
@@ -242,7 +225,7 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 				
 				System.out.println("Connection is established");
 				
-				suppliers = new ArrayList<>(100);
+				suppliers = new ArrayList<>(LIST_CAPACITY);
 				rs = stmt.executeQuery(sql);
 				
 				while(rs.next()) {
@@ -258,7 +241,7 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 			}
 			
 		} catch (SQLException e8) {
-			throw new SupplierDAOException("SQL Error in retrieving Supplier records");
+			throw new SupplierGetAllDAOException();
 		}
 		
 		return suppliers;

@@ -87,17 +87,4 @@ public class SupplierDTO extends BaseDTO{
 		this.city = city;
 	}
 	
-	// Object state display
-	
-	@Override
-	public String toString() {
-		return "SupplierDTO [name=" + name + ", mobilePhone=" + mobilePhone + ", email=" + email + ", address="
-				+ address + ", city=" + city + "]";
-	}
-	
-	
-	
-	
-	
-
 }

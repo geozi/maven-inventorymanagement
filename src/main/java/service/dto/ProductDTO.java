@@ -85,13 +85,5 @@ public class ProductDTO extends BaseDTO{
 	public void setSupplierID(String supplierID) {
 		this.supplierID = supplierID;
 	}
-	
-	// Object State Display
-	
-	@Override
-	public String toString() {
-		return "ProductDTO [name=" + name + ", description=" + description + ", unitPrice=" + unitPrice + ", quantity="
-				+ quantity + ", supplierID=" + supplierID + "]";
-	}
 
 }

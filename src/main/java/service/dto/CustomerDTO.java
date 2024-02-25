@@ -99,14 +99,6 @@ public class CustomerDTO extends BaseDTO {
 		this.city = city;
 	}
 	
-	// Object state display
-	
-	@Override
-	public String toString() {
-		return "CustomerDTO [firstname=" + firstname + ", lastname=" + lastname + ", mobilePhone=" + mobilePhone
-				+ ", email=" + email + ", billingAddress=" + billingAddress + ", city=" + city + "]";
-	}
-	
 	
 	
 	

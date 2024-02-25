@@ -1,5 +1,5 @@
 /**
- * It contains the class definitions for 
- * Service-level exceptions
+ * It contains the exception definitions for 
+ * Service-layer operations.
  */
 package service.exceptions;

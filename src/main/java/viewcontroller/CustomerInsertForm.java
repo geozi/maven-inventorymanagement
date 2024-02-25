@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import applauncher.Main;
-import dao.exceptions.CustomerDAOException;
+import dao.exceptions.CustomerInsertDAOException;
 import model.Customer;
 import service.IService;
 import service.CustomerServiceImpl;
@@ -169,7 +169,7 @@ public class CustomerInsertForm extends JFrame {
 					cityTxt.setText("");
 					
 					
-					} catch(CustomerDAOException | NoDataProvidedException e1) {
+					} catch(CustomerInsertDAOException | NoDataProvidedException e1) {
 						String errorSummary = e1.getMessage();
 						JOptionPane.showMessageDialog(null, errorSummary, "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (Exception e1) {
