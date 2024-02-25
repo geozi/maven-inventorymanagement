@@ -8,4 +8,5 @@ package dao;
 public interface IGenericEntity {
 	static int TIMEOUT=5;
 	static int LIST_CAPACITY = 50;
+	
 }

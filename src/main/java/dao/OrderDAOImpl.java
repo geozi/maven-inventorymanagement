@@ -227,5 +227,4 @@ public class OrderDAOImpl implements IPrimaryEntityDAO<Order> {
 		
 		return orders;
 	}
-	
 }

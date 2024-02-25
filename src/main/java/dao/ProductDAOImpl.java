@@ -248,6 +248,4 @@ public class ProductDAOImpl implements IPrimaryEntityDAO<Product> {
 		return products;
 	}
 	
-	
-
 }

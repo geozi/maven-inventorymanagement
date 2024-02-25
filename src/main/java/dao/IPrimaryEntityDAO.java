@@ -19,4 +19,5 @@ public interface IPrimaryEntityDAO<T> extends IGenericEntity {
 	void delete(int id) throws BaseDAOException;
 	List<T> getAll() throws BaseDAOException;
 	List<T> getAllByKeyword(KeywordType t, String kw) throws BaseDAOException;
+	
 }

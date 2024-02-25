@@ -247,7 +247,4 @@ public class SupplierDAOImpl implements IPrimaryEntityDAO<Supplier> {
 		return suppliers;
 	}
 	
-	
-	
-	
 }
