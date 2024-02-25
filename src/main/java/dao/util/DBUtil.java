@@ -20,7 +20,7 @@ public class DBUtil {
 	
 	static {
 		ds.setUrl("jdbc:mysql://localhost:randomPort/inventoryDB?serverTimezone=UTC");
-		ds.setUsername("randomUser");
+		ds.setUsername("randomName");
 		ds.setPassword("randomPassword");
 		ds.setInitialSize(8);
 		ds.setMaxTotal(32);
