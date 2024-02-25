@@ -11,5 +11,4 @@ public class SupplierNotFoundException extends BaseServiceException {
 	public SupplierNotFoundException() {
 		super("Supplier record not found");
 	}
-	
 }

@@ -11,5 +11,4 @@ public class CustomerNotFoundException extends BaseServiceException {
 	public CustomerNotFoundException() {
 		super("Customer record not found");
 	}
-
 }

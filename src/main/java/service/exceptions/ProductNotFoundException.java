@@ -11,5 +11,4 @@ public class ProductNotFoundException extends BaseServiceException {
 	public ProductNotFoundException() {
 		super("Product record not found");
 	}
-
 }

@@ -11,5 +11,4 @@ public class NoDataProvidedException extends BaseServiceException {
 	public NoDataProvidedException() {
 		super("Input Error: no data found for database request");
 	}
-
 }

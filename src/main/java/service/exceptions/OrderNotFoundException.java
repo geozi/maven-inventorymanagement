@@ -11,5 +11,4 @@ public class OrderNotFoundException extends BaseServiceException{
 	public OrderNotFoundException() {
 		super("Order record not found");
 	}
-	
 }
