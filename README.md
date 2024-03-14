@@ -15,7 +15,7 @@ The Inventory Management app allows the User to maintain and update a simple inv
 
 ## Prerequisites
 
- * A local instance of MySQL-Server, the inventoryDB model/schema, and a version of Java (17 or higher).
+ * A local instance of MySQL-Server, the inventoryDB model/schema, Maven, and a version of Java (17 or higher).
 
 ## Usage
 
